@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wake on LAN</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                <path d="M8 21h8"/>
+                <path d="M12 17v4"/>
+            </svg>
+            <span>Wake on LAN</span>
+        </div>
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}" class="active">Dashboard</a>
+            {% if current_user.is_admin %}
+            <a href="{{ url_for('config') }}">Configurar</a>
+            {% endif %}
+            <span class="user-info">{{ current_user.username }}</span>
+            <a href="{{ url_for('logout') }}">Sair</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <h1>Meus Computadores</h1>
+
+        {% if computers %}
+        <div class="computers-grid">
+            {% for computer in computers %}
+            <div class="computer-card" data-mac="{{ computer.mac }}" data-ip="{{ computer.ip }}">
+                <div class="computer-status">
+                    <span class="status-indicator offline"></span>
+                    <span class="status-text">Verificando...</span>
+                </div>
+                <div class="computer-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2"/>
+                        <path d="M8 21h8"/>
+                        <path d="M12 17v4"/>
+                    </svg>
+                </div>
+                <h3 class="computer-name">{{ computer.name }}</h3>
+                <p class="computer-mac">{{ computer.mac }}</p>
+                <p class="computer-ip">{{ computer.ip }}</p>
+                <button class="btn btn-wake" onclick="wakeComputer('{{ computer.mac }}', this)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                    Ligar
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                <path d="M8 21h8"/>
+                <path d="M12 17v4"/>
+                <path d="M12 7v4"/>
+                <circle cx="12" cy="13" r="0.5"/>
+            </svg>
+            <h2>Nenhum computador disponivel</h2>
+            {% if current_user.is_admin %}
+            <p>Adicione seus computadores na pagina de configuracao.</p>
+            <a href="{{ url_for('config') }}" class="btn btn-primary">Configurar</a>
+            {% else %}
+            <p>Solicite ao administrador que libere acesso aos computadores.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </main>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
